@@ -62,11 +62,10 @@ public class PersistentDao implements Dao<MemorySegment, Entry<MemorySegment>>, 
     @Override
     public Entry<MemorySegment> get(final MemorySegment key) {
         Entry<MemorySegment> result = data.get(key);
-        if (result != null) {
-            return result.value() == null ? null : result;
-        } else {
+        if (result == null) {
             return findValueInSSTable(key);
         }
+        return result.value() == null ? null : result;
     }
 
     @Override
@@ -121,9 +120,12 @@ public class PersistentDao implements Dao<MemorySegment, Entry<MemorySegment>>, 
                     dataSize += entry.value().byteSize();
                 }
             }
-            MemorySegment mappedData = dataChannel.map(FileChannel.MapMode.READ_WRITE, 0, dataSize, arena);
-            MemorySegment mappedIndexes = indexesChannel.map(FileChannel.MapMode.READ_WRITE, 0, indexesSize * Long.BYTES, arena);
-            MemorySegment mappedMeta = metaChanel.map(FileChannel.MapMode.READ_WRITE, 0, Long.BYTES, arena);
+            MemorySegment mappedData = dataChannel.map(
+                    FileChannel.MapMode.READ_WRITE, 0, dataSize, arena);
+            MemorySegment mappedIndexes = indexesChannel.map(
+                    FileChannel.MapMode.READ_WRITE, 0, indexesSize * Long.BYTES, arena);
+            MemorySegment mappedMeta = metaChanel.map(
+                    FileChannel.MapMode.READ_WRITE, 0, Long.BYTES, arena);
             mappedMeta.set(ValueLayout.JAVA_LONG_UNALIGNED, 0, indexesSize);
             long dataOffset = 0;
             long indexesOffset = 0;

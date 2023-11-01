@@ -15,7 +15,6 @@ import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
 public class SSTable implements Comparable<SSTable> {
 
     private MemorySegment mappedData;
@@ -164,8 +163,7 @@ public class SSTable implements Comparable<SSTable> {
         return Long.compare(o.tableNum, tableNum);
     }
 
-    public void delete() throws IOException
-    {
+    public void delete() throws IOException {
         Files.delete(dataPath);
         Files.delete(indexesPath);
         Files.delete(metaPath);
